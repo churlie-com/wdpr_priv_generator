@@ -109,7 +109,7 @@ class wdpr_fieldconfig
      }
      switch($type){
          case "radio":
-             $html.="<dt>$title</dt><dd>";
+             $html.="<dt class='wdpr_form_dt'>$title</dt><dd class='wdpr_form_dd'>";
              foreach($options as $option){
                  if(strpos($option,":")){
                      list($value,$label)=explode(":",$option);
@@ -124,49 +124,65 @@ class wdpr_fieldconfig
                  }
              }
              if($description){
-                 $html.=" <br /><small>$description</small>";
+                 $html.="<div class='wdpr_form_description'>$description</div>";
              }
              $html.="</dd>\n";
              break;
 
          case "select":
-             $html.="<dt>$title</dt><dd><select name='$key'>";
+             $html.="<dt class='wdpr_form_dt'>$title</dt><dd class='wdpr_form_dd'><select name='$key'>";
              foreach($options as $choice){
                  $label=ucwords(str_replace("_"," ",$choice));
                  $html.="<option value='$choice'>$label</option>";
              }
              $html.="</select>";
              if($description){
-                 $html.=" <br /><small>$description</small>";
+                 $html.="<div class='wdpr_form_description'>$description</div>";
              }
              $html.="</dd>\n";
              break;
 
          case "hidden":
              $html.="<input type='hidden' name='$key' value='$default' />\n";
+             if($description){
+                 $html.="<dd class='wdpr_form_dd'><div class='wdpr_form_description'>$description</div></dd>\n";
+             }
              break;
 
          case "checkbox":
          case "boolean":
-             $html.="<dt><input type='checkbox' name='$key' value='1' /> $title</dt>\n";
+             if($default == "Y" OR $default > 0){
+                 $html.="<dt class='wdpr_form_dt'><input type='checkbox' checked name='$key' value='1' /> $title</dt>\n";
+             } else {
+                 $html.="<dt class='wdpr_form_dt'><input type='checkbox' name='$key' value='1' /> $title</dt>\n";
+             }
              if($description){
-                 $html.="<dd><small>$description</small></dd>\n";
+                 $html.="<dd class='wdpr_form_dd'><div class='wdpr_form_description'>$description</div></dd>\n";
              }
              break;
 
          case "submit":
-             $html.="<dt></dt><dd><input type='submit' value='$title' />";
+             $html.="<dt class='wdpr_form_dt'></dt><dd class='wdpr_form_dd'><input type='submit' value='$title' />";
              if($description){
-                 $html.=" <br /><small>$description</small>";
+                 $html.="<div class='wdpr_form_description'>$description</div>";
              }
              $html.="</dd>\n";
              break;
 
+         case "explain":
+             if($title){
+                 $html.="<dt class='wdpr_form_dt'>$title</dt>";
+             }
+             if($description){
+                 $html.="<dd class='wdpr_form_dd'><div class='wdpr_form_description'>$description</div></dd>\n";
+             }
+             break;
+
          case "text":
          default:
-             $html.="<dt>$title</dt><dd><input type='text' name='$key' value='$default' />";
+             $html.="<dt class='wdpr_form_dt'>$title</dt><dd class='wdpr_form_dd'><input type='text' name='$key' value='$default' />";
              if($description){
-                 $html.=" <br /><small>$description</small>";
+                 $html.="<div class='wdpr_form_description'>$description</div>\n";
              }
              $html.="</dd>\n";
      }

@@ -48,7 +48,7 @@ class wdpr_textgenerator
                 switch(true){
                     case substr($paragraph,0,2) == "* ":
                         $paragraph=substr($paragraph,2);
-                        $html.="<li class='wdpr_article_li'>$paragraph</li>\n";
+                        $html.="<p class='wdpr_article_text'>&bull; $paragraph</p>\n";
                         break;
 
                     case substr($paragraph,0,1) == "	": // tab

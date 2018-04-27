@@ -84,7 +84,8 @@ class wdpr_fieldconfig
          $frequired=(isset($fieldinfo["required"]) ? true : false);
          $flabel=(isset($fieldinfo["label"]) ? $fieldinfo["label"] : false);
          $fdescr=(isset($fieldinfo["description"]) ? $fieldinfo["description"] : false);
-         $html.=$this->form_field($prefix,$key,$ftype,$foptions,$fdefault,$frequired,$flabel,$fdescr);
+         $fplace=(isset($fieldinfo["placeholder"]) ? $fieldinfo["placeholder"] : false);
+         $html.=$this->form_field($prefix,$key,$ftype,$foptions,$fdefault,$frequired,$flabel,$fplace,$fdescr);
      }
      if(!$has_submit){
          $html.=$this->form_field($prefix,"","submit");
@@ -94,7 +95,7 @@ class wdpr_fieldconfig
      return $html;
  }
 
- private function form_field($prefix,$name,$type,$options=Array(),$default=false,$required=false,$title=false,$description=false){
+ private function form_field($prefix,$name,$type,$options=Array(),$default=false,$required=false,$title=false,$placeholder=false,$description=false){
      $html="";
      if(!$title){
          $title=ucwords(str_replace("_"," ",$name));
@@ -124,7 +125,7 @@ class wdpr_fieldconfig
                  }
              }
              if($description){
-                 $html.="<div class='wdpr_form_description'>$description</div>";
+                 $html.=$this->description_html($description);
              }
              $html.="</dd>\n";
              break;
@@ -137,7 +138,7 @@ class wdpr_fieldconfig
              }
              $html.="</select>";
              if($description){
-                 $html.="<div class='wdpr_form_description'>$description</div>";
+                 $html.=$this->description_html($description);
              }
              $html.="</dd>\n";
              break;
@@ -145,7 +146,7 @@ class wdpr_fieldconfig
          case "hidden":
              $html.="<input type='hidden' name='$key' value='$default' />\n";
              if($description){
-                 $html.="<dd class='wdpr_form_dd'><div class='wdpr_form_description'>$description</div></dd>\n";
+                 $html.="<dd class='wdpr_form_dd'>" . $this->description_html($description) . "</dd>\n";
              }
              break;
 
@@ -157,32 +158,32 @@ class wdpr_fieldconfig
                  $html.="<dt class='wdpr_form_dt'><input type='checkbox' name='$key' value='1' /> $title</dt>\n";
              }
              if($description){
-                 $html.="<dd class='wdpr_form_dd'><div class='wdpr_form_description'>$description</div></dd>\n";
+                 $html.="<dd class='wdpr_form_dd'>" . $this->description_html($description) . "</dd>\n";
              }
              break;
 
          case "submit":
              $html.="<dt class='wdpr_form_dt'></dt><dd class='wdpr_form_dd'><input type='submit' value='$title' />";
              if($description){
-                 $html.="<div class='wdpr_form_description'>$description</div>";
+                 $html.=$this->description_html($description);
              }
              $html.="</dd>\n";
              break;
 
          case "explain":
-             if($title){
+             if(trim($title)){
                  $html.="<dt class='wdpr_form_dt'>$title</dt>";
              }
              if($description){
-                 $html.="<dd class='wdpr_form_dd'><div class='wdpr_form_description'>$description</div></dd>\n";
+                 $html.="<dd class='wdpr_form_dd'>" . $this->description_html($description) . "</dd>\n";
              }
              break;
 
          case "text":
          default:
-             $html.="<dt class='wdpr_form_dt'>$title</dt><dd class='wdpr_form_dd'><input type='text' name='$key' value='$default' />";
+             $html.="<dt class='wdpr_form_dt'>$title</dt><dd class='wdpr_form_dd'><input type='text' name='$key' placeholder='$placeholder' value='$default' />";
              if($description){
-                 $html.="<div class='wdpr_form_description'>$description</div>\n";
+                 $html.=$this->description_html($description);
              }
              $html.="</dd>\n";
      }
@@ -199,5 +200,19 @@ class wdpr_fieldconfig
         );
         $unique=substr(sha1(implode("-",$variables)),0,16);
         return $unique;
+    }
+
+    private function description_html($descriptions){
+        if(!$descriptions){
+            return false;
+        }
+        if(!is_array($descriptions)){
+            $descriptions=Array($descriptions);
+        }
+        $html="";
+        foreach($descriptions as $description){
+            $html.="<div class='wdpr_form_description'>$description</div>\n";
+        }
+        return $html;
     }
 }

@@ -12,8 +12,10 @@ License URI: http://www.gnu.org/licenses/gpl.html
 
 == Description ==
 
-> **[GDPR compliancy of 3rd parties](https://www.wdpr.eu/3rdparties "GDPR compliancy of 3rd parties")** |
-> **[Request your own GDPR compliance report](https://www.wdpr.eu/request "Request your own GDPR compliance report")** |
+Generate GDPR-compliant privacy statements
+
+> [GDPR compliancy of 3rd parties](https://www.wdpr.eu/3rdparties "GDPR compliancy of 3rd parties")
+> [Request your own GDPR compliance report](https://www.wdpr.eu/request "Request your own GDPR compliance report")
 
 = shortcodes: =
 

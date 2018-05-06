@@ -28,23 +28,51 @@ if ( !function_exists('wdpr_priv_generator_shortcode') ) {
 
 	function wdpr_priv_generator_shortcode( $atts ) {
 		global $post, $wdprpg_settings;
-        $wdpr_fields=New wdpr_fieldconfig(dirname( __FILE__ ) . '/config/fields.ini');
-		$return = '';
-		$defaults=$wdpr_fields->get_defaults();
-		extract( shortcode_atts( $defaults, $atts ) );
+        $defaults=Array("lang" => "en");
+        extract( shortcode_atts( $defaults, $atts ) );
+        $ini_file=dirname( __FILE__ ) . "/lang/fields-$lang.ini";
+        if(!file_exists($ini_file)){
+            $return="<p class='notice notice-error'>Language [$lang] not supported (yet).</p>\n";
+            return $return;
+        }
+        $wdpr_fields=New wdpr_fieldconfig($ini_file); // make this multi lingual later
 
-		$fields=$wdpr_fields->get_postfields();
-		if(!isset($fields["submitted"])){
+		$fields=$wdpr_fields->get_postfields("wdpr_");
+ 		echo "<!--";
+		print_r($fields);
+		echo "-->\n";
+		$status="FILLIN";
+		if($fields["_submitted"]){
+			if($fields["_form_has_validation_errors"]){
+				$status="ERRORS";
+			} else {
+				$status="PROCESS";
+			}
+		}
+		switch($status){
+			case "FILLIN":
+			echo "<!-- FILL IN FORM -->\n";
             $return=$wdpr_fields->show_form("wdpr_");
-		} else {
-            $wdpr_gen=New wdpr_textgenerator();
-            $template="privacy";
-            $lang=$fields["lang"];
-            $ini_file=dirname( __FILE__ ) . "/lang/$template-$lang.ini";
+			break;
+			
+			case "ERRORS":
+			echo "<!-- VALIDATION ERRORS -->\n";
+			$return=$wdpr_fields->show_validation_errors("wdpr_");
+			break;
+
+			case "PROCESS":
+			echo "<!-- PROCESS FORM -->\n";
+			$wdpr_gen=New wdpr_textgenerator();
+			$template="privacy";
+			$lang=$fields["lang"];
+			$ini_file=dirname( __FILE__ ) . "/lang/$template-$lang.ini";
 
 			$return=$wdpr_gen->generate($ini_file,$fields);
+			break;
+			
+		default:
+			echo "<!-- NOT SURE WHAT TO DO -->\n";
 		}
-
 		return $return;
 	}
 	add_shortcode( 'wdpr_priv_generator', 'wdpr_priv_generator_shortcode' );

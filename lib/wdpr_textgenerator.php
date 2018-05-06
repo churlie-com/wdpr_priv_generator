@@ -15,6 +15,7 @@ class wdpr_textgenerator
             $this->trace("Cannot find template file [$ini_file]");
             return(false);
         }
+		$this->trace("START OF wdpr_textgenerator::generate");
         $html="";
         $articles=parse_ini_file($ini_file,true);
         foreach($articles as $article_id => $article){
@@ -76,7 +77,7 @@ class wdpr_textgenerator
         return $html;
     }
 
-    function trace($text){
+    private function trace($text){
         echo "<!-- $text -->\n";
     }
 }

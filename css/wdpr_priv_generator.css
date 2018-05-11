@@ -3,16 +3,27 @@
 }
 
 .wdpr_article_li {
-
+    color: #333333;
+    font-size: .8em;
+    text-align: justify;
 }
 
 .wdpr_article_quote {
 
 }
 
+.wdpr_article_comment {
+    font-style: italic;
+    font-size: .7em;
+    color: #336633;
+    background: #EFE;
+    padding: 8px;
+    text-align: justify;
+}
+
 .wdpr_article_text {
     color: #333333;
-    font-size: .75em;
+    font-size: .8em;
     text-align: justify;
 }
 
@@ -32,6 +43,8 @@
     font-size: .75em;
     text-align: justify;
     background: #eeeeee;
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 input:focus {

@@ -25,10 +25,14 @@ class wdpr_fieldconfig
  
 	function get_fields(){
 		$fields=$this->fieldlist;
-		$fields["_submitted"]=Array(
-			"type" => "hidden",
-			"default" => 1,
-		);
+        $fields["_submitted"]=Array(
+            "type" => "hidden",
+            "default" => 1,
+        );
+        $fields["_today"]=Array(
+            "type" => "hidden",
+            "default" => date("Y-m-d"),
+        );
 		$fields["_unique"]=Array(
 			"type" => "hidden",
 			"default" => $this->form_session(),
@@ -252,7 +256,7 @@ class wdpr_fieldconfig
              break;
 
          case "chapter":
-             $html.="<div style='background: #DFD; padding: 10px'>";
+             $html.="<div style='background: #DDD; padding: 16px'>";
              if(trim($title)){
                  $html.="<span style='font-size: 2em'>$title</span>";
              }

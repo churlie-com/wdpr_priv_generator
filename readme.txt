@@ -8,7 +8,7 @@ Stable tag: 5.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
-[wdpr_priv_generator] shortcodes
+[wdpr_priv_generator] shortcode
 
 == Description ==
 
@@ -19,23 +19,9 @@ Generate GDPR-compliant privacy statements
 
 = shortcodes: =
 
-* **[wdpr_priv_generator]** - hierarchical tree of all pages on site (useful to show sitemap of the site);
-
-== Other Notes ==
-
-= Parameters for [wdpr_priv_generator]: =
-* **[pagelist]** - list of all pages as the hierarchical list;
-
-
-= Parameters for [pagelist_ext]: =
-* **[pagelist_ext]** - by default shows list of subpages to current page; but if there is no subpages than all pages will be shown;
+* **[wdpr_priv_generator lang="en"]** - show question list and generate privacy statement upon submit
 
 == Frequently Asked Questions ==
-
-= How to show the list of posts? =
-
-To show list of posts you can use [List Category Posts](http://wordpress.org/plugins/list-category-posts/) plugin.
-
 
 
 = What to do if you need to change the plugin's code? =

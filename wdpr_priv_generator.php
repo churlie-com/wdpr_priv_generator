@@ -25,6 +25,13 @@ if ( !function_exists('wdpr_priv_generator_shortcode') ) {
 	}
 	add_action('wp_enqueue_scripts', 'wdpr_priv_generator_add_stylesheet');
 
+    /********************************************************/
+// Adding Dashicons in WordPress Front-end
+    /********************************************************/
+    function load_dashicons_front_end() {
+        wp_enqueue_style( 'dashicons' );
+    }
+    add_action( 'wp_enqueue_scripts', 'load_dashicons_front_end' );
 
 	function wdpr_priv_generator_shortcode( $atts ) {
 		global $post, $wdprpg_settings;

@@ -8,7 +8,7 @@
 
 class wdpr_textgenerator
 {
-
+    var $parno=0;
 
     function generate($ini_file,$fields){
         if(!file_exists($ini_file)){
@@ -19,13 +19,8 @@ class wdpr_textgenerator
         $html="";
         $articles=parse_ini_file($ini_file,true);
         foreach($articles as $article_id => $article){
-            // filter_except=fieldname: check fieldname is not set
-            $filter_except=(isset($article["filter_except"]) ? $article["filter_except"] : "");
-            if($filter_except AND isset($fields[$filter_except]) AND $fields[$filter_except])	continue;
-
-            // filter_only=fieldname: check fieldname is set
-            $filter_only=(isset($article["filter_only"]) ? $article["filter_only"] : "");
-            if($filter_only AND (!isset($fields[$filter_only]) OR !$fields[$filter_only]))	continue;
+            if(!$this->check_filters("except",$article_id,$article,$fields))    continue;
+            if(!$this->check_filters("only",$article_id,$article,$fields))    continue;
 
             $title=(isset($article["title"]) ? $article["title"] : "");
             $text=(isset($article["paragraph"]) ? $article["paragraph"] : "");
@@ -39,7 +34,8 @@ class wdpr_textgenerator
     private function article_to_html($title,$paragraphs){
         $html="";
         if($title){
-            $html.="<h4 class='wdpr_article_title'>$title</h4>\n";
+            $this->parno++;
+            $html.="<h4 class='wdpr_article_title'>$this->parno. $title</h4>\n";
         }
         if($paragraphs){
             if(!is_array($paragraphs)){
@@ -47,14 +43,19 @@ class wdpr_textgenerator
             }
             foreach($paragraphs as $paragraph){
                 switch(true){
-                    case substr($paragraph,0,2) == "* ":
+                    case substr($paragraph,0,2) == "* ":    // bullet
                         $paragraph=substr($paragraph,2);
-                        $html.="<p class='wdpr_article_text'>&bull; $paragraph</p>\n";
+                        $html.="<li class='wdpr_article_text'>$paragraph</li>\n";
                         break;
 
                     case substr($paragraph,0,1) == "	": // tab
                         $paragraph=substr($paragraph,1);
                         $html.="<blockquote class='wdpr_article_quote'>$paragraph</blockquote>\n";
+                        break;
+
+                    case substr($paragraph,0,2) == "//": // comment
+                        $paragraph=substr($paragraph,2);
+                        $html.="<p class='wdpr_article_comment'><span class='dashicons dashicons-warning'></span> &lsaquo; $paragraph &rsaquo;</p>\n";
                         break;
 
                     default:
@@ -63,6 +64,70 @@ class wdpr_textgenerator
             }
         }
         return $html;
+    }
+
+    private function check_filters($type,$article_id,$article,$fields){
+        switch(strtolower($type)){
+            case "only":
+                if(!isset($article["filter_only"])){
+                    return true;
+                }
+                if(!$article["filter_only"]){
+                    return true;
+                }
+                $this->trace("check_filters: [$article_id][$type]");
+                $filters=$article["filter_only"];
+                $this->trace($filters);
+                if(!is_array($filters))  $filters=Array($filters);
+                $allowed=false;
+                foreach($filters as $filter){
+                    if(strpos($filter,":")){
+                        list($field_name,$value)=explode(":",$filter,2);
+                    } else {
+                        $field_name=$filter;
+                        $value=false;
+                    }
+                    if($value){
+                        if(isset($fields[$field_name]) AND $fields[$field_name]==$value) $allowed=true;
+                    } else {
+                        if(isset($fields[$field_name]) AND $fields[$field_name]) $allowed=true;
+                    }
+                }
+                return $allowed;
+                break;
+
+            case "except":
+                if(!isset($article["filter_except"])){
+                    return true;
+                }
+                if(!$article["filter_except"]){
+                    return true;
+                }
+                $this->trace("check_filters: [$article_id][$type]");
+                $filters=$article["filter_except"];
+                $this->trace($filters);
+                if(!is_array($filters))  $filters=Array($filters);
+                $allowed=true;
+                foreach($filters as $filter){
+                    if(strpos($filter,":")){
+                        list($field_name,$value)=explode(":",$filter,2);
+                    } else {
+                        $field_name=$filter;
+                        $value=false;
+                    }
+                    if($value){
+                        if(isset($fields[$field_name]) AND $fields[$field_name]==$value) $allowed=false;
+                    } else {
+                        if(isset($fields[$field_name]) AND $fields[$field_name]) $allowed=false;
+                    }
+                }
+                return $allowed;
+                break;
+
+            default:
+                $this->trace("Skip filter - unknown type [$type]");
+                return true;
+        }
     }
 
     private function replace_tags($html,$fields,$cleanup=false){
@@ -77,7 +142,13 @@ class wdpr_textgenerator
         return $html;
     }
 
-    private function trace($text){
-        echo "<!-- $text -->\n";
+    private function trace($information){
+        if(is_array($information)){
+            echo "<!--  ";
+            print_r($information);
+            echo "-->\n";
+        } else {
+            echo "<!--  $information -->\n";
+        }
     }
 }

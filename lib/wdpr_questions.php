@@ -5,8 +5,9 @@
  * Date: 26/04/2018
  * Time: 10:48
  */
+require_once 'wdpr_tools.php';
 
-class wdpr_fieldconfig
+class wdpr_questions
 {
     var $initialised = false;
     var $fieldlist = Array();
@@ -16,6 +17,7 @@ class wdpr_fieldconfig
      if(!$inifile){ return false; }
      if(!file_exists($inifile)){    return false;  }
      $this->fieldlist=parse_ini_file($inifile,true);
+     $this->tool=New wdpr_tools();
      if(isset($this->fieldlist)){
          $this->initialised=true;
          return true;
@@ -37,6 +39,7 @@ class wdpr_fieldconfig
 			"type" => "hidden",
 			"default" => $this->form_session(),
 		);
+        //$this->tool->trace(array_keys($fields));
 		return $fields;
 	}
 
@@ -48,6 +51,7 @@ class wdpr_fieldconfig
 				$list[$fieldname]=$fieldinfo["default"];
 			}
 		}
+        $this->tool->trace($list);
 		return $list;
 	}
 	
@@ -70,9 +74,7 @@ class wdpr_fieldconfig
         }
         //$return["domain_name"]=$_SERVER["SERVER_NAME"]; // this server, for credits
         $return["generator_page"]=get_permalink(); // this page, for credits
-        //echo "<!--\n";
-        //print_r($return);
-        //echo "-->\n";
+        $this->tool->trace($return);
         return $return;
     }
 
@@ -172,7 +174,7 @@ class wdpr_fieldconfig
          $key=$name;
      }
      if($required){
-         $title.="<sup style='color: red'>*</sup>";
+         $title="<sup style='color: red'>*</sup>$title";
      }
      switch($type){
          case "radio":
@@ -210,7 +212,11 @@ class wdpr_fieldconfig
 					 $val=$choice;
 					 $label=ucwords(str_replace("_"," ",$choice));
 				 }
-                 $html.="<option value='$val'>$label</option>\n";
+				 if($val==$default){
+                     $html.="<option selected value='$val'>$label</option>\n";
+                 } else {
+                     $html.="<option value='$val'>$label</option>\n";
+                 }
              }
              $html.="</select>\n";
              if($description){
@@ -312,10 +318,6 @@ class wdpr_fieldconfig
             $html.="<div class='wdpr_form_description'>$description</div>\n";
         }
         return $html;
-    }
-
-    private function trace($text){
-        echo "<!-- $text -->\n";
     }
 
 }

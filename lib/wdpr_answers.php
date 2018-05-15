@@ -5,17 +5,22 @@
  * Date: 26/04/2018
  * Time: 12:09
  */
+require_once 'wdpr_tools.php';
 
-class wdpr_textgenerator
+class wdpr_answers
 {
-    var $parno=0;
+    var $paragraph_nr=0;
+
+    function __construct(){
+        $this->tool=New wdpr_tools();
+    }
 
     function generate($ini_file,$fields){
         if(!file_exists($ini_file)){
-            $this->trace("Cannot find template file [$ini_file]");
+            $this->tool->trace("Cannot find template file [$ini_file]");
             return(false);
         }
-		$this->trace("START OF wdpr_textgenerator::generate");
+		$this->tool->trace("START OF wdpr_answers::generate");
         $html="";
         $articles=parse_ini_file($ini_file,true);
         foreach($articles as $article_id => $article){
@@ -34,8 +39,8 @@ class wdpr_textgenerator
     private function article_to_html($title,$paragraphs){
         $html="";
         if($title){
-            $this->parno++;
-            $html.="<h4 class='wdpr_article_title'>$this->parno. $title</h4>\n";
+            $this->paragraph_nr++;
+            $html.="<h4 class='wdpr_article_title'>$this->paragraph_nr. $title</h4>\n";
         }
         if($paragraphs){
             if(!is_array($paragraphs)){
@@ -75,9 +80,9 @@ class wdpr_textgenerator
                 if(!$article["filter_only"]){
                     return true;
                 }
-                $this->trace("check_filters: [$article_id][$type]");
+                $this->tool->trace("check_filters: [$article_id][$type]");
                 $filters=$article["filter_only"];
-                $this->trace($filters);
+                $this->tool->trace($filters);
                 if(!is_array($filters))  $filters=Array($filters);
                 $allowed=false;
                 foreach($filters as $filter){
@@ -103,9 +108,9 @@ class wdpr_textgenerator
                 if(!$article["filter_except"]){
                     return true;
                 }
-                $this->trace("check_filters: [$article_id][$type]");
+                $this->tool->trace("check_filters: [$article_id][$type]");
                 $filters=$article["filter_except"];
-                $this->trace($filters);
+                $this->tool->trace($filters);
                 if(!is_array($filters))  $filters=Array($filters);
                 $allowed=true;
                 foreach($filters as $filter){
@@ -125,7 +130,7 @@ class wdpr_textgenerator
                 break;
 
             default:
-                $this->trace("Skip filter - unknown type [$type]");
+                $this->tool->trace("Skip filter - unknown type [$type]");
                 return true;
         }
     }
@@ -142,13 +147,4 @@ class wdpr_textgenerator
         return $html;
     }
 
-    private function trace($information){
-        if(is_array($information)){
-            echo "<!--  ";
-            print_r($information);
-            echo "-->\n";
-        } else {
-            echo "<!--  $information -->\n";
-        }
-    }
 }
